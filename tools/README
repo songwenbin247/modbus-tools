@@ -1,0 +1,85 @@
+
+
+1. Initialize and configure a Modbus server using "mbt" commant.
+============================================
+  1) Create a new tcp listener:
+     $mbt --create_listener=<ip>:<port>
+
+     default: ip   - local ip
+              port - 502
+
+  2) List the tcp listeners:
+     $mbt --listeners   
+     $mbt --listener=<listener_id>
+ 
+  
+  3) Close a tcp listener:
+     $mbt --close_listener=<listener_id>
+
+  4) Create a new modbus slave device:
+     $mbt --create_device=<device_id>:<discrete_inputs_bits_start:ns_bits>: \
+	  <coils_start_bits:ns_bits>:<holding_registers_start:ns_regs>:<input_registers_start:ns_regs>
+ 
+     default: device_id - System will allocate a id for it.
+              others    - if default, don't create this address-ranges.
+
+  5) Delete a modbus slave device:
+     $mbt --del_device=<device_id>
+
+  6) Bind a modbus slave device with a listener:
+     $mbt --bind_listener=<device_id:listener_id>
+
+     default: listener_id - will bind the device with all of listeners.
+ 
+  7) Unbind a modbus slave device with its listener:
+     $mbt --unbind-listener=<device_id:listener_id>
+
+     default: listener_id - will unbind the device with all of listeners binding with it.
+
+  8) List the slave devices:
+     $mbt --list_devices
+     Or
+     $mbt --list_device=<device_id>
+
+  9) Modify a modbus slave device:
+     $mbt --modify_device=<device_id>:<discrete_inputs_bits_start:ns_bits>: \
+	  <coils_start_bits:ns_bits>:<holding_registers_start:ns_regs>:<input_registers_start:ns_regs>
+ 
+     default:
+              Except device_id  - if default, do nothing.
+ 
+  10) Bind a hook-command for a function-addresses range of a modbus device:
+     $mbt --bind_command=<device_id>:<function_code>:<addresses-range>:<command>
+
+     default: addresses-range - will band the command with the all addresses of this device.
+
+  11) Unbind a hook-command for a function-addresses range of a modbus device:
+     $mbt --unbind_command=<device_id>:<function_code>:<addresses-range>:<command>
+
+     default: addresses-range - will band the command with the all addresses binding with it.
+
+  12) Start with a configfile:
+     $mbt --start_file=<configfile>
+ 
+     default: configfile - /var/modbus/configfile
+
+  13) Save current config as a configfile:
+     $mbt --save_file=<configfile>
+  
+     default: configfile - /var/modbus/configfile
+
+2. Hook-command
+===============
+   The hook-command cloud be programed with shell, C, C++, python and so on, and will be called when the function-addresses range binding with this hook-command is accessed by a modbus master. Before called, the hook-command's based IO streams(input, output and error) will be redirected. So, the hook-command should not use these streams.
+
+     1) How to get the values of the function-addresses range.
+        System will pass two file description to hook-command by as its argument. one is for read, and the others is for write. The hook-command could wirte a request to write-file and get the values from read-file. 
+
+     2) How to set the values of the function-addresses range.
+        As well as tip 1), The hook-command could wirte a request to write-file to set these values.
+
+3. Request:
+   Read values:
+        "read <address> <len>"
+
+   Write "write <address> <len> <datas>"
