@@ -64,18 +64,18 @@ struct pri_list_head
 
 #define PRI_LIST_FOR_BUSY(temp, name, member) \
 		for (temp = container_of(PRI_HEAD_P(name)->busy.next, typeof(name[0]), member);\
-		   temp->member.next != &PRI_HEAD_P(name)->busy; \
+		   &temp->member != &PRI_HEAD_P(name)->busy; \
 		   temp = container_of(temp->member.next, typeof(name[0]), member) ) 
 
 #define PRI_LIST_FOR_UNUSED(temp, name, member) \
 		for (temp = container_of(PRI_HEAD_P(name)->unused.next, typeof(name[0]), member);\
-		   temp->member.next != &PRI_HEAD_P(name)->unused; \
+		   &temp->member != &PRI_HEAD_P(name)->unused; \
 		   temp = container_of(temp->member.next, typeof(name[0]), member) ) 
 
 #define PRI_LIST_FOR_BUSY_SAFE(temp, name, member, n) \
 		for (temp = container_of(PRI_HEAD_P(name)->busy.next, typeof(name[0]), member), \
 			n = temp->member.next;\
-		   temp->member.next != &PRI_HEAD_P(name)->busy; \
+		   &temp->member != &PRI_HEAD_P(name)->busy; \
 		   temp = container_of(n, typeof(name[0]), member),\
 		   n = temp->member.next) 
 
