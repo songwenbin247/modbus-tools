@@ -2,7 +2,7 @@
 #define __PRI_MALLOC__H__
 #include <stdlib.h>
 #include  "list.h"
-#include <stdlib.h>
+#include <string.h>
 struct pri_list_head
 {
 	struct list_head busy;
@@ -69,7 +69,7 @@ struct pri_list_head
 
 #define PRI_LIST_FOR_UNUSED(temp, name, member) \
 		for (temp = container_of(PRI_HEAD_P(name)->unused.next, typeof(name[0]), member);\
-		   temp->member.next != &PRI_HEAD_P(name)->unsed; \
+		   temp->member.next != &PRI_HEAD_P(name)->unused; \
 		   temp = container_of(temp->member.next, typeof(name[0]), member) ) 
 
 #define PRI_LIST_FOR_BUSY_SAFE(temp, name, member, n) \
