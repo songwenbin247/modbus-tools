@@ -7,7 +7,6 @@
 #include "list.h"
 #include "errlog.h"
 
-
 #define SHUT_DOWN INT_MAX
 #define POOL_NAME thread_pool
 PRI_DECLARE(struct thread_pool_t, POOL_NAME);
@@ -18,7 +17,7 @@ static void *load_thread_fn(void *arg)
 	struct thread_pool_t *tp = arg;
 	int ret = 0;
 	
-	Info_put("thread_id = %u: Start.\n", pthread_self());
+	Info_put("thread_id = %u: Start.\n", tp->id);
 	pthread_mutex_lock(&tp->mutex);
 
 	for (;;){
@@ -27,21 +26,21 @@ static void *load_thread_fn(void *arg)
 			pthread_cond_wait(&tp->cond, &tp->mutex);
 			
 		if (tp->count == SHUT_DOWN){
-			Info_put("thread_id = %u: Get SHUT_DOWN signal.\n", pthread_self());
+			Info_put("thread_id = %u: Get SHUT_DOWN signal.\n", tp->id);
 			break;	
 		}
 		
-		Debug_put("thread_id = %u: start fn\n", pthread_self());
+		Debug_put("thread_id = %u: start fn\n", tp->id);
 		(*tp->fn)(tp->arg);
-		Debug_put("thread_id = %u: end fn\n", pthread_self());
+		Debug_put("thread_id = %u: end fn\n", tp->id);
 		tp->count--;
 
 		if (tp->count == 0)
 			put_thread(tp);	
 	}
 	
-pthread_mutex_unlock(&tp->mutex);
-	Info_put("thread_id = %u: End.\n", pthread_self());
+	pthread_mutex_unlock(&tp->mutex);
+	Info_put("thread_id = %u: End.\n", tp->id);
 	pthread_exit((void *)ret);
 }
 
@@ -78,6 +77,7 @@ int thread_pool_init(int threads_num)
 			goto create_fail;
 		}				
 	}
+	return ret;
 create_fail:
 	pthread_cond_destroy(&tp->cond);
 cond_fail:
@@ -124,7 +124,7 @@ tp_t get_thread(void * (*fn)(void *), void *arg)
 int kill_thread(tp_t tp)
 {
 	pthread_mutex_lock(&tp->mutex);
-	tp->count == SHUT_DOWN;
+	tp->count = SHUT_DOWN;
 	pthread_cond_signal(&tp->cond);
 	pthread_mutex_unlock(&tp->mutex);
 	pthread_join(tp->tidp, NULL);
@@ -189,16 +189,16 @@ tp_t inline find_an_over_thread()
 }
 
 
-
 void thread_pool_free()
 {	
 	tp_t tp;
 	pthread_rwlock_wrlock(&tp_rwlock);
+	
 	PRI_LIST_FOR_BUSY(tp, POOL_NAME, tp_list){
 		PRI_DEL(tp, POOL_NAME, tp_list);
 	}	
 	
-	PRI_LIST_FOR_BUSY(tp, POOL_NAME, tp_list){
+	PRI_LIST_FOR_UNUSED(tp, POOL_NAME, tp_list){
 		kill_thread(tp);
 		pthread_cond_destroy(&tp->cond);
 		pthread_mutex_destroy(&tp->mutex);
