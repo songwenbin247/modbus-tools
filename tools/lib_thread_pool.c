@@ -15,8 +15,7 @@ pthread_rwlock_t tp_rwlock;
 static void *load_thread_fn(void *arg)
 {
 	struct thread_pool_t *tp = arg;
-	int ret = 0;
-	
+
 	Info_put("thread_id = %u: Start.\n", tp->id);
 	pthread_mutex_lock(&tp->mutex);
 
@@ -41,7 +40,7 @@ static void *load_thread_fn(void *arg)
 	
 	pthread_mutex_unlock(&tp->mutex);
 	Info_put("thread_id = %u: End.\n", tp->id);
-	pthread_exit((void *)ret);
+	pthread_exit((void *)0);
 }
 
 int thread_pool_init(int threads_num)
