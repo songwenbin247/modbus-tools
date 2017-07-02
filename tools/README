@@ -49,12 +49,12 @@
               Except device_id  - if default, do nothing.
  
   10) Bind a hook-command for a function-addresses range of a modbus device:
-     $mbt --bind_command=<device_id>:<function_code>:<addresses-range>:<command>
+     $mbt --bind_command=<device_id>:<function_code>:<addresses_start:end>:<command>
 
      default: addresses-range - will band the command with the all addresses of this device.
 
   11) Unbind a hook-command for a function-addresses range of a modbus device:
-     $mbt --unbind_command=<device_id>:<function_code>:<addresses-range>:<command>
+     $mbt --unbind_command=<device_id>:<function_code>:<addresses_start:end>:<command>
 
      default: addresses-range - will band the command with the all addresses binding with it.
 
