@@ -4,6 +4,8 @@
 #include <sys/un.h>
 #include <sys/socket.h>
 #include <errno.h>
+#include <fcntl.h>
+#include <sys/resource.h>
 #include <limits.h>
 #define COMMAND_MAX  15
 #define REQUEST_MAX  256
@@ -135,29 +137,8 @@ static void cmd_usages()
 	}
 }
 
-int socket_fd = 0;
-int client_fd = 0;
-int create_socket()
-{
-	struct sockaddr_un un;
-	int size;
 
-	un.sun_family = AF_UNIX;
-	strcpy(un.sun_path, SOCKET_NAME);
-	if ((socket_fd = socket(AF_UNIX, SOCK_STREAM, 0)) < 0){
-		printf("Create the socket error\n");
-		return -1;
-	}
-
-	size = offsetoff(struct sockaddr_un, sun_path) + strlen(un.sun_path);	
-	if (bind(fd, (struct sockaddr *)&un, size) < 0){
-		printf("Bind the socket error\n");
-		return -1;
-	}
-	return 0;
-}
-
-int connect_server()
+static int __connect_server()
 {
 	int fd, len, err, ret;
 	struct sockaddr_un un;
@@ -206,6 +187,16 @@ fail_out:
 	return ret;
 }
 
+static int connect_server()
+{
+	int ret;
+	if (access(SOCKET_NAME, F_OK)){
+		printf("Can't find %s, make sure mbtd has been running\n", SOCKET_NAME);
+		return -1;
+	}
+	return __connect_server();
+
+}
 
 void close_connect()
 {

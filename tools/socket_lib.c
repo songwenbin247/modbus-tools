@@ -9,7 +9,6 @@
 
 #define LISTENERS_MAX  5
 #define MASTER_DEVICE_MAX 5
-#define MBT_MAX   5
 #define UNIX_SOCKET_PATH "/var/modbus/modbus.socket"
 
 struct client_t
@@ -30,7 +29,7 @@ struct unix_listener_t
 	int status;
 	int fd;
 	struct sockaddr_un sock_addr;
-	struct client_t client[MBT_MAX];
+	struct client_t client;
 };
 
 struct socket_info_t

@@ -9,11 +9,49 @@
 struct fd_pool_t
 {
 	int fd;
+	int id;
 	struct rb_node rb;
 	struct list_head list;
 	thread_fn fn;	
 	void *arg;
 };
+
+#define FD_L_NAME(name) name##_FD_L
+
+#define FD_L_POOL_DECLARE(name) \
+	PRI_DECLARE(struct fd_pool_t, name);\
+
+
+#define FD_L_POOL_INIT(name, num) ({\
+	PRI_MALLOC(name, num, list) \
+	struct fd_pool_t *tem; \
+	int i = 0;\
+	PRI_LIST_FOR_UNUSED(tem, name, list)\
+		tem->id = i++; })
+	
+
+#define FD_L_POOL_FREE(name) \
+	PRI_FREE(name)
+
+#define FD_L_GET(name) \
+	PRI_GET(name, list)
+
+#define FD_L_DEL(entry, name) \
+	PRI_DEL(entry, name. list)
+#define FD_L_COM_DEL(name, compare) \
+	PRI_COM_DEL(name, list, compare)
+
+#define FD_L_LIST_FOR_BUSY(temp, name) \
+	PRI_LIST_FOR_BUSY(temp, name, list)
+
+#define FD_L_LIST_FOR_UNUSED(temp, name) \
+	PRI_LIST_FOR_UNUSED(temp, name, list)
+
+#define FD_L_LIST_FOR_BUSY_SAFE(temp, ntemp, name) \
+	PRI_LIST_FOR_BUSY_SAFE(temp, name, list, ntemp)
+
+
+
 
 #define RB_NAME(name) name##_RB_ROOT
 
@@ -21,8 +59,13 @@ struct fd_pool_t
 	PRI_DECLARE(struct fd_pool_t, name);\
 	struct rb_root RB_NAME(name) = RB_ROOT	
 
-#define FD_POOL_INIT(name, num) \
-	PRI_MALLOC(name, num,list) 
+#define FD_POOL_INIT(name, num) ({ \
+	PRI_MALLOC(name, num, list) \
+	struct fd_pool_t *tem; \
+	int i = 0;\
+	PRI_LIST_FOR_UNUSED(tem, name, list)\
+		tem->id = i++; })
+
 #define FD_POOL_FREE(name) \
 	PRI_FREE(name)
 #define FD_POOL_INSERT(name, fd, fn, arg) ({\

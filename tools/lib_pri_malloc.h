@@ -27,9 +27,9 @@ struct pri_list_head
 
 #define PRI_MALLOC(name_p, num, member)  ({\
 		name_p = malloc(num * sizeof(*name_p)); \
-		memset(name_p, 0 , num * sizeof(*name_p));\
 		int ret = -1; \
 		if (name_p){ \
+			memset(name_p, 0 , num * sizeof(*name_p));\
 			PRI_HEAD_P(name_p) = malloc(sizeof(struct pri_list_head)); \
 			if (!PRI_HEAD_P(name_p))\
 				free(name_p);\
