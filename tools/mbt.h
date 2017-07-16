@@ -21,17 +21,12 @@ struct command_t
 #define O_LIST_ID     3
 
 #define C_DIV_ID     4
-#define M_DIV_ID     5
 #define L_DIV_ID     6
 #define L_DIVS_ID    7
-#define D_DIV_ID     8
-#define B_DIV_ID     9
-#define U_DIV_ID     10
+#define O_DIV_ID     8
 
-#define B_COM_ID     11
-#define U_COM_ID     12
-#define S_FILE_ID    13
-#define C_FILE_ID    14
+#define R_FILE_ID    13
+#define S_FILE_ID    14
 
 
 const struct command_t command_list[COMMAND_MAX] = {

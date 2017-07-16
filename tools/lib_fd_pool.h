@@ -13,7 +13,7 @@ struct fd_pool_t
 	struct rb_node rb;
 	struct list_head list;
 	thread_fn fn;	
-	void *arg;
+	void *data;
 };
 
 #define FD_L_NAME(name) name##_FD_L
